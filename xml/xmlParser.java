@@ -38,6 +38,13 @@ public class xmlParser {
 					especies.add(listaespecies.item(i).getFirstChild().getTextContent());
 				}
 				System.out.println("Especies distintas: "+especies.size());
+				
+				NodeList listaprecios=elementoraiz.getElementsByTagName("PRICE");
+				double suma=0;
+				for (int i = 0; i < listaprecios.getLength(); i++) {
+					suma+=Double.parseDouble(listaprecios.item(i).getFirstChild().getTextContent().replace("$", "").trim());
+				}
+				System.out.println("Precio total "+suma);
 			}
 			else{
 				System.out.println("Sin argumentos");
