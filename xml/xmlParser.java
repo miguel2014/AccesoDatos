@@ -2,6 +2,8 @@ package xml;
 
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,21 +32,41 @@ public class xmlParser {
 				Element elementoraiz=midocumento.getDocumentElement();
 				System.out.println("El elemento raiz del XMl es: "+elementoraiz.getTagName());
 				NodeList listaplantas=elementoraiz.getElementsByTagName("PLANT");
-				System.out.println("Hay "+listaplantas.getLength()+" plantas");
+				System.out.println("Ejercicio 1:\n\tHay "+listaplantas.getLength()+" plantas");
 				NodeList listaespecies=elementoraiz.getElementsByTagName("BOTANICAL");
 				System.out.println("Primera especie "+listaespecies.item(0).getTextContent());
 				Set<String> especies=new HashSet<String>();
 				for (int i = 0; i < listaespecies.getLength(); i++) {
 					especies.add(listaespecies.item(i).getFirstChild().getTextContent());
 				}
-				System.out.println("Especies distintas: "+especies.size());
+				System.out.println("Ejercicio 2:\n\tEspecies distintas: "+especies.size());
 				
 				NodeList listaprecios=elementoraiz.getElementsByTagName("PRICE");
-				double suma=0;
+				double minPrecio=1000000,maxPrecio=0,suma = 0,tmpPrecio=0.0;
 				for (int i = 0; i < listaprecios.getLength(); i++) {
-					suma+=Double.parseDouble(listaprecios.item(i).getFirstChild().getTextContent().replace("$", "").trim());
+					tmpPrecio=Double.parseDouble(listaprecios.item(i).getFirstChild().getTextContent().replace("$", "").trim());
+					suma+=tmpPrecio;
+					minPrecio=tmpPrecio < minPrecio ? tmpPrecio : minPrecio;
+					maxPrecio=tmpPrecio > maxPrecio ? tmpPrecio : maxPrecio; 
 				}
-				System.out.println("Precio total "+suma);
+				System.out.println("Ejercicio 3:\n\tPrecio total "+suma);
+				System.out.println("Ejercicio 4:\n\tPrecio minimo: "+minPrecio+"\tPrecio maximo: "+maxPrecio);
+				DecimalFormat df = new DecimalFormat("0.00");
+				System.out.println("Precio medio: "+df.format(suma/listaprecios.getLength()));
+				System.out.printf("Precio maximo %1$.2f\n Precio minimo %2$.2f\n Precio medio: %3$.2f\n"
+						,minPrecio,maxPrecio,suma/listaprecios.getLength());
+				
+				//Solucion usando un HashMap
+				
+				HashMap<Double, String> mapa=new HashMap<Double, String>(listaplantas.getLength());
+				for (int i = 0; i < listaplantas.getLength(); i++) {
+					mapa.put(Double.parseDouble(((Element) listaplantas.item(i)).getElementsByTagName("PRICE").item(0).getFirstChild().getTextContent().substring(1).trim()),
+							((Element)listaplantas.item(i)).getElementsByTagName("COMMON").item(0).getFirstChild().getTextContent()
+							);
+				}
+				System.out.printf("Ejercicio 5: Precio maximo=%1$.2f  ,common=%2$s\n",maxPrecio,mapa.get(maxPrecio));
+				System.out.printf("Ejercicio 5: Precio minimo=%1$.2f  ,common=%2$s\n",minPrecio,mapa.get(minPrecio));
+				
 			}
 			else{
 				System.out.println("Sin argumentos");
